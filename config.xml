@@ -1,0 +1,19 @@
+<?xml version="1.0"?>
+<config>
+    <view>
+        <templatePath>../templates</templatePath>
+        <twig>
+            <cache>../cache/twig</cache>
+            <debug>true</debug>
+            <autoReload>true</autoReload>
+        </twig>
+    </view>
+    <logger>
+        <name>app</name>
+        <path>log/portal/portal.log</path>
+    </logger>
+    <app>
+        <displayErrorDetails>true</displayErrorDetails>
+        <determineRouteBeforeAppMiddleware>true</determineRouteBeforeAppMiddleware>
+    </app>
+</config>
