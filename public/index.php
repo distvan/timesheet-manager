@@ -12,6 +12,7 @@ use Symfony\Component\Translation\Translator;
 #Own libraries
 use DotLogics\Config;
 use DotLogics\Action\HomeAction;
+use DotLogics\Action\ApiLoginAction;
 
 $config = Config::getPortalConfig();
 $app = new App($config);
@@ -69,10 +70,15 @@ $container['db'] = function($c){
 $container['DotLogics\Action\HomeAction'] = function($c){
     return new HomeAction($c->get('view'), $c->get('db'));
 };
-
+$container['DotLogics\Action\ApiLoginAction'] = function($c){
+    return new ApiLoginAction($c->get('db'), $c->get('logger'));
+};
 #### Path ################################################
 
 $app->get('/', 'DotLogics\Action\HomeAction:index')
     ->setName('homepage');
+
+$app->post('/api/login', 'DotLogics\Action\ApiLoginAction:login')
+    ->setName('login');
 
 $app->run();
