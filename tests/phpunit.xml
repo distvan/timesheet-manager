@@ -4,13 +4,12 @@
         backupGlobals="true"
         backupStaticAttributes="false"
         cacheTokens="false"
-        colors="false"
+        colors="true"
         convertErrorsToExceptions="true"
         convertNoticesToExceptions="true"
         convertWarningsToExceptions="true"
         forceCoversAnnotation="false"
         mapTestClassNameToCoveredClassName="false"
-        printerClass="PHPUnit_TextUI_ResultPrinter"
         processIsolation="false"
         stopOnError="false"
         stopOnFailure="false"
@@ -21,7 +20,7 @@
         timeoutForSmallTests="1"
         timeoutForMediumTests="10"
         timeoutForLargeTests="60"
-        verbose="false">
+        verbose="true">
 <php>
     <env name="DB_HOST" value="127.0.0.1" />
     <env name="DB_NAME" value="timesheet_manager" />
