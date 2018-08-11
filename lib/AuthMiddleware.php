@@ -21,7 +21,7 @@ class AuthMiddleware
     private $_db;
     private $_log;
 
-    public function __construct($db, $log, $roles)
+    public function __construct($db, $log)
     {
         $this->_userId = 0;
         $this->_db = $db;
@@ -45,12 +45,14 @@ class AuthMiddleware
         $token = isset($header[0]) ? $header[0] : '';
         $validToken = $this->isValidToken($token);
 
+        $newRequest = $request->withAttribute('user_id', $this->_userId);
+
         if(empty($token) || !$validToken)
         {
             return $response->withStatus(401);
         }
 
-        $response = $next($request, $response);
+        $response = $next($newRequest, $response);
 
         //$response->getBody()->write('AFTER');
 

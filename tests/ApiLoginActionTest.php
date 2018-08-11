@@ -7,7 +7,6 @@ use Slim\Http\Environment;
 use Slim\Http\Request;
 use Slim\Http\Response;
 use GuzzleHttp\Client;
-use Slim\App;
 use DotLogics\DB\UserDB;
 
 
@@ -76,7 +75,18 @@ class ApiLoginActionTest extends TestBase
 
     public function testUnauthorizedLoginApi()
     {
-        $response = $this->_http->request('POST', '/api/login', array('user' => '', 'password'=>''));
+        $response = $this->_http->request('POST', '/api/login', array(
+            'multipart'=> array(
+                array(
+                    'name' => 'user',
+                    'contents' => ''
+                ),
+                array(
+                    'name' => 'password',
+                    'contents' => ''
+                )
+            )
+        ));
         $code = $response->getStatusCode();
         $this->assertTrue($code == 401);
     }
@@ -91,7 +101,7 @@ class ApiLoginActionTest extends TestBase
         $user->setPassword($password);
         $user->setFirstName('firstname');
         $user->setLastName('lastname');
-        $user->addUser();
+        $user->save();
 
         $response = $this->_http->request('POST', '/api/login', array(
             'multipart'=> array(

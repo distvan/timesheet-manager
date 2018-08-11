@@ -13,6 +13,8 @@ use Symfony\Component\Translation\Translator;
 use DotLogics\Config;
 use DotLogics\Action\HomeAction;
 use DotLogics\Action\ApiLoginAction;
+use DotLogics\Action\ApiProjectAction;
+use DotLogics\AuthMiddleware;
 
 $config = Config::getPortalConfig();
 $app = new App($config);
@@ -73,6 +75,9 @@ $container['DotLogics\Action\HomeAction'] = function($c){
 $container['DotLogics\Action\ApiLoginAction'] = function($c){
     return new ApiLoginAction($c->get('db'), $c->get('logger'));
 };
+$container['DotLogics\Action\ApiProjectAction'] = function($c){
+    return new ApiProjectAction($c->get('db'), $c->get('logger'));
+};
 #### Path ################################################
 
 $app->get('/', 'DotLogics\Action\HomeAction:index')
@@ -80,5 +85,15 @@ $app->get('/', 'DotLogics\Action\HomeAction:index')
 
 $app->post('/api/login', 'DotLogics\Action\ApiLoginAction:login')
     ->setName('login');
+
+### PROJECTS
+$app->group('/api/project', function() use ($app, $container){
+    $app->post('/add', 'DotLogics\Action\ApiProjectAction:addProject')
+        ->setName('addProject')
+        ->add(new AuthMiddleware($container['db'], $container['logger']));
+    $app->post('/getAll/{userId}', 'DotLogics\Action\ApiProjectAction:getAllProjectForUser')
+        ->setName('getAllProjectForUser')
+        ->add(new AuthMiddleware($container['db'], $container['logger']));
+});
 
 $app->run();

@@ -5,7 +5,6 @@ use DotLogics\Password;
 use DateTime;
 use PDO;
 use Exception;
-use DotLogics\DB\ExceptionMessagesDB;
 
 /**
  * Database User Handling class
@@ -15,12 +14,9 @@ use DotLogics\DB\ExceptionMessagesDB;
  * @url https://www.dotlogics.hu
  *
  */
-class UserDB
+class UserDB extends BaseDB
 {
     const TABLE_NAME = 'user';
-
-    private $_db;
-    private $_log;
 
     private $_id;
     private $_email;
@@ -30,14 +26,7 @@ class UserDB
     private $_active;
     private $_created_at;
     private $_created_by;
-
-
-    public function __construct(PDO $db, $log)
-    {
-        $this->_db = $db;
-        $this->_log = $log;
-    }
-
+    
     public function getUserByEmail($email)
     {
         try
@@ -151,7 +140,12 @@ class UserDB
         return $result;
     }
 
-    public function addUser()
+    public function get()
+    {
+        // TODO: Implement get() method.
+    }
+
+    public function save()
     {
         $password = new Password();
         $now = new DateTime('now');
@@ -190,7 +184,7 @@ class UserDB
         return $password->isValid($passwordIn, $this->_password);
     }
 
-    public function deleteUser()
+    public function delete()
     {
         if(empty($this->_id))
         {

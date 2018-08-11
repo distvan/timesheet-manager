@@ -32,7 +32,7 @@ class UserDBTest extends TestBase
         $this->_user->setPassword($password);
         $this->_user->setActive('1');
 
-        $userId = $this->_user->addUser();
+        $userId = $this->_user->save();
 
         $this->assertGreaterThan(0, $userId);
     }
@@ -52,7 +52,7 @@ class UserDBTest extends TestBase
         $this->_user->setActive('1');
         $this->_user->setPassword($password);
 
-        $userId = $this->_user->addUser();
+        $userId = $this->_user->save();
 
         $this->assertGreaterThan(0, $userId);
 
@@ -62,7 +62,7 @@ class UserDBTest extends TestBase
         $this->_user->setCreatedBy($createdBy);
         $this->_user->setActive('1');
         $this->_user->setPassword($password);
-        $userId = $this->_user->addUser();
+        $userId = $this->_user->save();
         $this->assertTrue($userId instanceof Exception);
     }
 
@@ -81,11 +81,11 @@ class UserDBTest extends TestBase
         $this->_user->setPassword($password);
         $this->_user->setActive('1');
 
-        $userId = $this->_user->addUser();
+        $userId = $this->_user->save();
         $this->assertGreaterThan(0, $userId);
         $user = $this->_user->getUserByEmail($email);
         $this->assertTrue($user instanceof UserDB);
-        $user->deleteUser();
+        $user->delete();
         $user = $this->_user->getUserByEmail($email);
         $this->assertEquals(NULL, $user);
     }
@@ -96,7 +96,7 @@ class UserDBTest extends TestBase
         $this->_user->setId(0);
         try
         {
-            $this->_user->deleteUser();
+            $this->_user->delete();
         }
         catch(Exception $e)
         {
@@ -148,7 +148,7 @@ class UserDBTest extends TestBase
             $this->_user->setCreatedBy($user['created_by']);
             $this->_user->setActive('1');
             $this->_user->setPassword($user['password']);
-            $this->_user->addUser();
+            $this->_user->save();
         }
 
         $list = $this->_user->getAllUser();
@@ -161,7 +161,7 @@ class UserDBTest extends TestBase
 
         foreach($list as $user)
         {
-            $user->deleteUser();
+            $user->delete();
         }
 
         $list = $this->_user->getAllUser();
