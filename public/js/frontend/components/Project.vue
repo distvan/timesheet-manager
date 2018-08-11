@@ -1,6 +1,6 @@
 <template>
-    <div id="dashboard" class="container">
-        Here comes the dashboard
+    <div id="project" class="container">
+        Project
     </div>
 </template>
 

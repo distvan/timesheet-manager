@@ -1,6 +1,6 @@
 <template>
-    <div id="dashboard" class="container">
-        Here comes the dashboard
+    <div id="summary" class="container">
+        Summary
     </div>
 </template>
 

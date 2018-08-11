@@ -98,7 +98,11 @@ class ApiLoginAction
 
             return $response->withStatus(200)
                 ->withHeader('Content-Type','application/json')
-                ->write(json_encode(array('token_id' => $serializedToken)));
+                ->write(json_encode(array(
+                    'token_id' => $serializedToken,
+                    'user_id' => $loggedUser->getId(),
+                    'first_name' => $loggedUser->getFirstName()
+                )));
         }
 
         return $response->withStatus(401);

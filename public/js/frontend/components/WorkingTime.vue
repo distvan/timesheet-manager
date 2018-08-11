@@ -1,6 +1,6 @@
 <template>
-    <div id="dashboard" class="container">
-        Here comes the dashboard
+    <div id="working-time" class="container">
+        WorkingTime
     </div>
 </template>
 

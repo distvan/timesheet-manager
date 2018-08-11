@@ -1,12 +1,11 @@
 import Vue from 'vue'
-import VueResource from 'vue-resource'
-import Main from 'Main.vue'
-
-//https://www.thepolyglotdeveloper.com/2018/04/simple-user-login-vuejs-web-application/
-
-Vue.use(VueResource)
+import Main from './Main.vue'
+import router from './router'
+import store from './store'
 
 new Vue({
     el: '#container',
-    render: h=> h(Main)
+    router: router,
+    store: store,
+    render: h => h(Main)
 })

@@ -4,3 +4,5 @@ vendor
 cache
 log
 node_modules
+public/js/dist
+package-lock.json
