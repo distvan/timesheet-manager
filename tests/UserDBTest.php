@@ -167,4 +167,22 @@ class UserDBTest extends TestBase
         $list = $this->_user->getAllUser();
         $this->assertEquals(0, count($list));
     }
+
+    public function One()
+    {
+        $email = 'test@test.hu';
+        $password = 'test';
+        $lastName = 'Teszt';
+        $firstName = 'Elek';
+        $createdBy = '1';
+
+        $this->_user->setEmail($email);
+        $this->_user->setLastName($lastName);
+        $this->_user->setFirstName($firstName);
+        $this->_user->setCreatedBy($createdBy);
+        $this->_user->setPassword($password);
+        $this->_user->setActive('1');
+
+        $userId = $this->_user->save();
+    }
 }

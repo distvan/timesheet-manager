@@ -27,6 +27,16 @@ class ProjectDB extends BaseDB
 
     public function save()
     {
+        if(empty($this->_name))
+        {
+            throw new Exception('Empty name field!', ExceptionMessagesDB::EXCEPTION_PROJECT_NO_NAME);
+        }
+        
+        if(!empty($this->_id))
+        {
+            return $this->modify();
+        }
+
         if(empty($this->_created_by))
         {
             throw new Exception('Empty created_by field!', ExceptionMessagesDB::EXCEPTION_PROJECT_NO_CREATOR_ID);
@@ -46,6 +56,48 @@ class ProjectDB extends BaseDB
             $stmt->execute();
 
             return $this->_db->lastInsertId();
+        }
+        catch(Exception $e)
+        {
+            $this->_log->error('[' . __CLASS__ . '::' . __FUNCTION__ . ']' . $e->getMessage());
+            return $e;
+        }
+    }
+
+    protected function modify()
+    {
+        try
+        {
+            $stmt = $this->_db->prepare("UPDATE " . self::TABLE_NAME . " SET parent_id=:parent_id, 
+                                        name=:name, description=:description WHERE id=:id");
+
+            $stmt->bindParam(":parent_id", $this->_parent_id);
+            $stmt->bindParam(":name", $this->_name);
+            $stmt->bindParam(":description", $this->_description);
+            $stmt->bindParam(":id", $this->_id);
+
+            $stmt->execute();
+
+            return TRUE;
+        }
+        catch(Exception $e)
+        {
+            $this->_log->error('[' . __CLASS__ . '::' . __FUNCTION__ . ']' . $e->getMessage());
+            return $e;
+        }
+    }
+
+    public function modifyActive()
+    {
+        try
+        {
+            $stmt = $this->_db->prepare("UPDATE " . self::TABLE_NAME . " SET active=:active WHERE id=:id");
+            $stmt->bindParam(":active", $this->_active);
+            $stmt->bindParam(":id", $this->_id);
+
+            $stmt->execute();
+
+            return TRUE;
         }
         catch(Exception $e)
         {

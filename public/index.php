@@ -91,7 +91,16 @@ $app->group('/api/project', function() use ($app, $container){
     $app->post('/add', 'DotLogics\Action\ApiProjectAction:addProject')
         ->setName('addProject')
         ->add(new AuthMiddleware($container['db'], $container['logger']));
-    $app->post('/getAll/{userId}', 'DotLogics\Action\ApiProjectAction:getAllProjectForUser')
+
+    $app->post('/setStatus/{id}/{status}', 'DotLogics\Action\ApiProjectAction:setProjectStatus')
+        ->setName('setProjectStatus')
+        ->add(new AuthMiddleware($container['db'], $container['logger']));
+
+    $app->post('/modify/{id}', 'DotLogics\Action\ApiProjectAction:modifyProject')
+        ->setName('modifyProject')
+        ->add(new AuthMiddleware($container['db'], $container['logger']));
+
+    $app->get('/getAll/{userId}', 'DotLogics\Action\ApiProjectAction:getAllProjectForUser')
         ->setName('getAllProjectForUser')
         ->add(new AuthMiddleware($container['db'], $container['logger']));
 });

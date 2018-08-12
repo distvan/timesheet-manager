@@ -125,9 +125,10 @@ class ApiProjectAction
         foreach($list as $item)
         {
             array_push($projectList, array(
-                'id' => $item->getId(),
-                'name' => $item->getName(),
-                'description' => $item->getDescription()
+                    'id' => $item->getId(),
+                    'name' => $item->getName(),
+                    'description' => $item->getDescription(),
+                    'active' => $item->getActive() == 1 ? true : false
                 )
             );
         }
@@ -135,6 +136,60 @@ class ApiProjectAction
         return $response->withStatus(200)
             ->withHeader('Content-Type', 'application/json')
             ->write(json_encode(array('result' => $projectList)));
+    }
+
+    /**
+     * Set project status
+     *
+     * @param Request $request
+     * @param Response $response
+     * @param $args
+     * @return mixed
+     * @throws \Exception
+     */
+    public function setProjectStatus(Request $request, Response $response, $args)
+    {
+        $projectId = (int)$args['id'];
+        $active = (int)$args['status'];
+
+        $project = new ProjectDB($this->_db, $this->_log);
+        $project->setId($projectId);
+        $project->setActive($active);
+        $project->modifyActive();
+
+        return $response->withStatus(200)
+            ->withHeader('Content-Type', 'application/json')
+            ->write(json_encode(array('result' => 'ok')));
+    }
+
+    /**
+     * Modify project
+     *
+     * @param Request $request
+     * @param Response $response
+     * @param $args
+     * @return mixed
+     * @throws \Exception
+     */
+    public function modifyProject(Request $request, Response $response, $args)
+    {
+        $projectId = (int)$args['id'];
+
+        $params = json_decode(file_get_contents('php://input'));
+        $name = isset($params->name) ? $params->name : $request->getParam('name');
+        $description = isset($params->description) ? $params->description : $request->getParam('description');
+        $parent = isset($params->parent) ? (int)$params->parent : (int)$request->getParam('parent');
+
+        $project = new ProjectDB($this->_db, $this->_log);
+        $project->setId($projectId);
+        $project->setName($name);
+        $project->setDescription($description);
+        $project->setParentId($parent);
+        $project->save();
+
+        return $response->withStatus(200)
+            ->withHeader('Content-Type', 'application/json')
+            ->write(json_encode(array('result' => 'ok')));
     }
 }
 ?>

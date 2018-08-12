@@ -43,6 +43,7 @@ export default new Vuex.Store({
                     userId: res.data.user_id,
                     firstName: res.data.first_name
                 })
+                axios.defaults.headers.common['Authorization'] = res.data.token_id
                 router.push({name: 'dashboard'})
             }).catch(error => {
                 if(error.response.status == 401){
@@ -55,6 +56,17 @@ export default new Vuex.Store({
             localStorage.removeItem('token')
             localStorage.removeItem('userId')
             router.replace({name: 'loginForm'})
+        },
+        addProject({state}, projectData){
+            axios.post('/api/project/add', {
+                name: projectData.name,
+                description: projectData.description,
+                active: 1
+            }).then(res => {
+                dispatch('getAllProject')
+            }).catch(error => {
+                console.log(error)
+            })
         }
     },
     getters: {
