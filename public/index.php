@@ -14,6 +14,7 @@ use DotLogics\Config;
 use DotLogics\Action\HomeAction;
 use DotLogics\Action\ApiLoginAction;
 use DotLogics\Action\ApiProjectAction;
+use DotLogics\Action\ApiWorkingTimeAction;
 use DotLogics\AuthMiddleware;
 
 $config = Config::getPortalConfig();
@@ -78,6 +79,9 @@ $container['DotLogics\Action\ApiLoginAction'] = function($c){
 $container['DotLogics\Action\ApiProjectAction'] = function($c){
     return new ApiProjectAction($c->get('db'), $c->get('logger'));
 };
+$container['DotLogics\Action\ApiWorkingTimeAction'] = function($c){
+    return new ApiWorkingTimeAction($c->get('db'), $c->get('logger'));
+};
 #### Path ################################################
 
 $app->get('/', 'DotLogics\Action\HomeAction:index')
@@ -102,6 +106,21 @@ $app->group('/api/project', function() use ($app, $container){
 
     $app->get('/getAll/{userId}', 'DotLogics\Action\ApiProjectAction:getAllProjectForUser')
         ->setName('getAllProjectForUser')
+        ->add(new AuthMiddleware($container['db'], $container['logger']));
+});
+
+### WORKINGTIMES
+$app->group('/api/workingtime', function() use ($app, $container){
+    $app->post('/add', 'DotLogics\Action\ApiWorkingTimeAction:addWorkingTime')
+        ->setName('addWorkingTime')
+        ->add(new AuthMiddleware($container['db'], $container['logger']));
+
+    $app->post('/delete', 'DotLogics\Action\ApiWorkingTimeAction:deleteWorkingTime')
+        ->setName('deleteWorkingTime')
+        ->add(new AuthMiddleware($container['db'], $container['logger']));
+
+    $app->get('/getAllToday', 'DotLogics\Action\ApiWorkingTimeAction:getTodayWorkingTimes')
+        ->setName('getTodayWorkingTime')
         ->add(new AuthMiddleware($container['db'], $container['logger']));
 });
 

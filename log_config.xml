@@ -6,7 +6,7 @@
         <layout class="LoggerLayoutPattern">
             <param name="conversionPattern" value="%date [%logger] %message%newline" />
         </layout>
-        <param name="file" value="log/timesheet.log" />
+        <param name="file" value="../log/timesheet.log" />
     </appender>
 
     <logger name="test">
