@@ -134,15 +134,23 @@ class WorkingTimeDB extends BaseDB
 
     public function getBetween($dateFrom, $dateTo, $projectId)
     {
+        $createdBy = $this->getCreatedBy();
+        $where = $createdBy ? " AND wt.created_by=:created_by" : "";
+
+        $sql = "SELECT wt.id, wt.project_id, wt.date_from, wt.date_to, wt.description, wt.approved, wt.approved_at, wt.approved_by, wt.created_at, wt.created_by 
+                                         FROM " . self::TABLE_NAME . " wt, " . ProjectDB::TABLE_NAME . " p 
+                                         WHERE wt.project_id=p.id AND (p.parent_id=:project_id OR p.id=:project_id) AND wt.date_from>=:date_from  AND wt.date_to<=:date_to" . $where;
         try
         {
-            $stmt = $this->_db->prepare("SELECT wt.id, wt.project_id, wt.date_from, wt.date_to, wt.description, wt.approved, wt.approved_at, wt.approved_by, wt.created_at, wt.created_by 
-                                         FROM " . self::TABLE_NAME . " wt, " . ProjectDB::TABLE_NAME . " p 
-                                         WHERE wt.project_id=p.id AND (p.parent_id=:project_id OR p.id=:project_id) AND wt.date_from>=:date_from  AND wt.date_to<=:date_to");
-
+            $stmt = $this->_db->prepare($sql);
             $stmt->bindParam(":date_from", $dateFrom);
             $stmt->bindParam(":date_to", $dateTo);
             $stmt->bindParam(":project_id", $projectId);
+
+            if($createdBy)
+            {
+                $stmt->bindParam(":created_by", $createdBy);
+            }
 
             $stmt->execute();
             $stmt->setFetchMode(PDO::FETCH_ASSOC);
@@ -183,31 +191,47 @@ class WorkingTimeDB extends BaseDB
         }
     }
 
-    public function getAllTodayForUser()
+    public function getAllForUser()
     {
-        $dt = new DateTime('NOW');
-        $now = $dt->format('Y-m-d');
-        $dateFrom = $now . ' 00:00:00';
-        $dateTo = $now . ' 23:59:59';
-        $createdBy = $this->getCreatedBy();
+        $projectId = (int)$this->getProjectId();
+        $createdBy = (int)$this->getCreatedBy();
+        $dateFrom = $this->_date_from;
+        $dateTo = $this->_date_to;
+
+        $where = "wt.created_by=:created_by AND date_from>=:date_from AND date_to<=:date_to AND wt.project_id=p.id";
+        $where .= $projectId ? " AND wt.project_id=:project_id" : "";
+
+        if(!$this->_date_from && !$this->_date_to){
+            $dt = new DateTime('NOW');
+            $now = $dt->format('Y-m-d');
+            $dateFrom = $now . ' 00:00:00';
+            $dateTo = $now . ' 23:59:59';
+        }
+
+        $sql = "SELECT wt.id, wt.description, p.name,
+                  EXTRACT(HOUR FROM date_from) AS from_hour, 
+                  EXTRACT(MINUTE FROM date_from) AS from_min,
+                  EXTRACT(HOUR FROM date_to) AS to_hour, 
+                  EXTRACT(MINUTE FROM date_to) AS to_min,
+                  ROUND(TIMESTAMPDIFF(MINUTE, date_from, date_to)/60, 2) AS hours 
+                FROM " . WorkingTimeDB::TABLE_NAME . " wt, " . ProjectDB::TABLE_NAME . " p
+                WHERE " . $where;
 
         try
         {
-            $stmt = $this->_db->prepare("SELECT id, description,
-                                        EXTRACT(HOUR FROM date_from) AS from_hour, 
-                                        EXTRACT(MINUTE FROM date_from) AS from_min,
-                                        EXTRACT(HOUR FROM date_to) AS to_hour, 
-                                        EXTRACT(MINUTE FROM date_to) AS to_min,
-                                        ROUND(TIMESTAMPDIFF(MINUTE, date_from, date_to)/60, 2) AS hours 
-                                        FROM " . self::TABLE_NAME . " 
-                                        WHERE created_by=:created_by AND date_from>=:date_from AND date_to<=:date_to");
+            $stmt = $this->_db->prepare($sql);
 
             $stmt->bindParam(":created_by", $createdBy);
             $stmt->bindParam(":date_from", $dateFrom);
             $stmt->bindParam(":date_to", $dateTo);
+
+            if($projectId){
+                $stmt->bindParam(":project_id", $projectId);
+            }
+
             $stmt->execute();
 
-            return $stmt->fetchALL();
+            return $stmt->fetchALL(PDO::FETCH_ASSOC);
         }
         catch(Exception $e)
         {

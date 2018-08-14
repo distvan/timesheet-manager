@@ -122,6 +122,14 @@ $app->group('/api/workingtime', function() use ($app, $container){
     $app->get('/getAllToday', 'DotLogics\Action\ApiWorkingTimeAction:getTodayWorkingTimes')
         ->setName('getTodayWorkingTime')
         ->add(new AuthMiddleware($container['db'], $container['logger']));
+
+    $app->get('/getFiltered/{from}/{to}/{project_id}', 'DotLogics\Action\ApiWorkingTimeAction:getFiltered')
+        ->setName('getFilteredWorkingTime')
+        ->add(new AuthMiddleware($container['db'], $container['logger']));
+
+    $app->get('/export/{from}/{to}/{project_id}/{lang}/{format}', 'DotLogics\Action\ApiWorkingTimeAction:createExport')
+        ->setName('exportWorkingTime')
+        ->add(new AuthMiddleware($container['db'], $container['logger']));
 });
 
 $app->run();

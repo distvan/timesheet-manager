@@ -5,7 +5,7 @@ use Psr\Http\Message\ServerRequestInterface as Request;
 use Psr\Http\Message\ResponseInterface as Response;
 use DotLogics\DB\WorkingTimeDB;
 use DotLogics\DB\WorkingTimeModificationDB;
-
+use DotLogics\Report;
 
 class ApiWorkingTimeAction
 {
@@ -119,7 +119,7 @@ class ApiWorkingTimeAction
         $workingTime = new WorkingTimeDB($this->_db, $this->_log);
         $workingTime->setCreatedBy($createdBy);
 
-        $workingTimes = $workingTime->getAllTodayForUser();
+        $workingTimes = $workingTime->getAllForUser();
 
         return $response->withStatus(200)
             ->withHeader('Content-Type', 'application/json')
@@ -147,6 +147,51 @@ class ApiWorkingTimeAction
         return $response->withStatus(200)
             ->withHeader('Content-Type', 'application/json')
             ->write(json_encode(array('result' => 'ok')));
+    }
+
+    /**
+     * Get filtered working times
+     *
+     * @param Request $request
+     * @param Response $response
+     * @param $args
+     * @return mixed
+     */
+    public function getFiltered(Request $request, Response $response, $args)
+    {
+        $projectId = (int)$args['project_id'];
+        $from = $args['from'];
+        $to = $args['to'];
+        $createdBy = (int)$request->getAttribute('user_id');    //it comes from the token in middleware
+
+        $workingTime = new WorkingTimeDB($this->_db, $this->_log);
+        $workingTime->setProjectId($projectId);
+        $workingTime->setCreatedBy($createdBy);
+        $workingTime->setDateFrom($from);
+        $workingTime->setDateTo($to);
+        $result = $workingTime->getAllForUser();
+
+        return $response->withStatus(200)
+            ->withHeader('Content-Type', 'application/json')
+            ->write(json_encode(array('result' => $result)));
+    }
+
+    public function createExport(Request $request, Response $response, $args)
+    {
+        $projectId = (int)$args['project_id'];
+        $from = $args['from'];
+        $to = $args['to'];
+        $createdBy = (int)$request->getAttribute('user_id');    //it comes from the token in middleware
+        $language = $args['lang'];
+        $format = isset($args['format']) ? $args['format'] : 'pdf';
+
+        $report = new Report($this->_db, $this->_log);
+        $report->setLanguage($language);
+        $pdfContent = $report->generateSummaryTimeReport($from, $to, $projectId);
+
+        return $response->withStatus(200)
+            ->withHeader('Content-type', 'application/pdf')
+            ->write($pdfContent);
     }
 }
 ?>
