@@ -6,7 +6,7 @@ return array(
     'task' => 'Task',
     'long' => 'Length',
     'total' => 'Total',
-    'footer' => "Produced by TimesheetManager " . PHP_EOL . " 2016 DotLogics Hungary Kft.",
+    'footer' => "Produced by TimesheetManager " . PHP_EOL . " 2018 DotLogics Hungary Kft.",
     'hour'  => 'hours',
     'minute' => 'min',
     'date_format' => 'm/d/Y'

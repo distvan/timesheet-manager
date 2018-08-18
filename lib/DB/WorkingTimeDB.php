@@ -208,13 +208,15 @@ class WorkingTimeDB extends BaseDB
             $dateTo = $now . ' 23:59:59';
         }
 
-        $sql = "SELECT wt.id, wt.description, p.name,
+        $sql = "SELECT wt.id, wt.description, p.name, COALESCE(invoice_no,'') AS invoice_no,
                   EXTRACT(HOUR FROM date_from) AS from_hour, 
                   EXTRACT(MINUTE FROM date_from) AS from_min,
                   EXTRACT(HOUR FROM date_to) AS to_hour, 
                   EXTRACT(MINUTE FROM date_to) AS to_min,
                   ROUND(TIMESTAMPDIFF(MINUTE, date_from, date_to)/60, 2) AS hours 
-                FROM " . WorkingTimeDB::TABLE_NAME . " wt, " . ProjectDB::TABLE_NAME . " p
+                FROM " . ProjectDB::TABLE_NAME . " p, " . WorkingTimeDB::TABLE_NAME . " wt
+                LEFT JOIN " . InvoiceItemsDB::TABLE_NAME . " invitem ON invitem.wt_id = wt.id
+                LEFT JOIN " . InvoiceDB::TABLE_NAME . " inv ON inv.invoice_id = invitem.invoice_id
                 WHERE " . $where;
 
         try

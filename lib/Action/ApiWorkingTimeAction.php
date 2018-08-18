@@ -1,6 +1,8 @@
 <?php
 namespace DotLogics\Action;
 
+use DotLogics\DB\InvoiceDB;
+use DotLogics\DB\InvoiceItemsDB;
 use Psr\Http\Message\ServerRequestInterface as Request;
 use Psr\Http\Message\ResponseInterface as Response;
 use DotLogics\DB\WorkingTimeDB;
@@ -192,6 +194,36 @@ class ApiWorkingTimeAction
         return $response->withStatus(200)
             ->withHeader('Content-type', 'application/pdf')
             ->write($pdfContent);
+    }
+
+
+    /**
+     * Attach a period of worktimes to an invoice
+     *
+     * @param Request $request
+     * @param Response $response
+     * @param $args
+     * @return mixed
+     */
+    public function attachInvoice(Request $request, Response $response, $args)
+    {
+        $params = json_decode(file_get_contents('php://input'));
+        $workingTimeIds = isset($params->wt_ids) ? $params->wt_ids : $request->getParam('wt_ids');
+        $invoiceNo = isset($params->invoice_no) ? $params->invoice_no : $request->getParam('invoice_no');
+        $savedBy = (int)$request->getAttribute('user_id');    //it comes from the token in middleware
+
+        if(is_array($workingTimeIds))
+        {
+            $invoice = new InvoiceDB($this->_db, $this->_log);
+            $invoice->setSavedBy($savedBy);
+            $invoice->setInvoiceNo($invoiceNo);
+            $invoice->setItems($workingTimeIds);
+            $invoice->save();
+        }
+
+        return $response->withStatus(200)
+            ->withHeader('Content-Type', 'application/json')
+            ->write(json_encode(array('result' => 'ok')));
     }
 }
 ?>

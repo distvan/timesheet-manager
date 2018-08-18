@@ -165,6 +165,45 @@ CREATE TABLE IF NOT EXISTS `timesheet_manager`.`working_time_summary` (
 ENGINE = InnoDB
 DEFAULT CHARACTER SET = utf8;
 
+
+-- -----------------------------------------------------
+-- Table `timesheet_manager`.`invoice`
+-- -----------------------------------------------------
+DROP TABLE IF EXISTS `timesheet_manager`.`invoice` ;
+
+CREATE TABLE IF NOT EXISTS `timesheet_manager`.`invoice` (
+  `invoice_id` INT UNSIGNED NOT NULL AUTO_INCREMENT,
+  `invoice_no` VARCHAR(10) NOT NULL,
+  PRIMARY KEY (`invoice_id`),
+  UNIQUE INDEX `invoice_no_UNIQUE` (`invoice_no` ASC))
+ENGINE = InnoDB;
+DEFAULT CHARACTER SET = utf8;
+
+-- -----------------------------------------------------
+-- Table `timesheet_manager`.`invoice_item`
+-- -----------------------------------------------------
+DROP TABLE IF EXISTS `timesheet_manager`.`invoice_item` ;
+
+CREATE TABLE IF NOT EXISTS `timesheet_manager`.`invoice_item` (
+  `invoice_item_id` INT UNSIGNED NOT NULL AUTO_INCREMENT,
+  `invoice_id` INT UNSIGNED NOT NULL,
+  `wt_id` INT NOT NULL,
+  PRIMARY KEY (`invoice_item_id`),
+  INDEX `fk_inv_item_wt_idx` (`wt_id` ASC),
+  INDEX `fk_inv_item_inv_idx` (`invoice_id` ASC),
+  CONSTRAINT `fk_inv_item_wt`
+    FOREIGN KEY (`wt_id`)
+    REFERENCES `timesheet_manager`.`working_time` (`id`)
+    ON DELETE RESTRICT
+    ON UPDATE CASCADE,
+  CONSTRAINT `fk_inv_item_inv`
+    FOREIGN KEY (`invoice_id`)
+    REFERENCES `timesheet_manager`.`invoice` (`invoice_id`)
+    ON DELETE RESTRICT
+    ON UPDATE CASCADE)
+ENGINE = InnoDB;
+DEFAULT CHARACTER SET = utf8;
+
 USE `timesheet_manager` ;
 
 -- -----------------------------------------------------

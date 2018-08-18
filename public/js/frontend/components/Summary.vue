@@ -85,15 +85,15 @@
                             <th class="th-date">To</th>
                             <th class="th-hours">Hours</th>
                             <th class="th-action">Project</th>
+                            <th class="th-invoice">Invoice</th>
                         </tr>
                         <tr v-for="(wtime, index) in wtimes">
                             <td>{{ wtime.description }}</td>
                             <td>{{ wtime.from_hour }}:{{ wtime.from_min }}</td>
                             <td>{{ wtime.to_hour }}:{{ wtime.to_min }}</td>
                             <td>{{ wtime.hours }}</td>
-                            <td class="td-action">
-                                {{ wtime.name }}
-                            </td>
+                            <td class="td-action">{{ wtime.name }}</td>
+                            <td>{{ wtime.invoice_no }}</td>
                         </tr>
                         <tr class="summary">
                             <td>Summary:</td>
@@ -101,8 +101,13 @@
                             <td></td>
                             <td>{{ summaryHours }}</td>
                             <td></td>
+                            <td></td>
                         </tr>
                     </table>
+                    <div v-if="showInvoicing">
+                        <input placeholder="Invoice number" type="text" v-model="invoice_number" />
+                        <button @click="onInvoicing" type="button">Invoicing</button>
+                    </div>
                 </div>
             </div>
         </form>
@@ -128,7 +133,20 @@
                 projects: [],
                 wtimes: [],
                 summaryHours: 0,
-                language: 'en_US'
+                language: 'en_US',
+                invoice_number: ''
+            }
+        },
+        computed:{
+            showInvoicing(){
+                var show = true
+                for(var i=0;i<this.wtimes.length ;i++){
+                    if(this.wtimes[i].invoice_no != ''){
+                        show = false
+                    }
+                }
+
+                return this.wtimes.length > 0 && show
             }
         },
         methods:{
@@ -146,7 +164,7 @@
                             console.log(error)
                         })
             },
-            onSubmit(){
+            getWorkingTimes(){
                 var dates = this.getDates()
 
                 if(dates.from != '' && dates.to != ''){
@@ -163,6 +181,9 @@
                                 console.log(error)
                             })
                 }
+            },
+            onSubmit(){
+                this.getWorkingTimes();
             },
             onExport(){
                 console.log('Export')
@@ -190,6 +211,20 @@
                                 console.log(error)
                             })
                 }
+            },
+            onInvoicing(){
+                var ids = []
+                for(var i=0;i<this.wtimes.length;i++){
+                    ids.push(this.wtimes[i].id)
+                }
+                axios.post('/api/workingtime/attachInvoice', {
+                    wt_ids: ids,
+                    invoice_no: this.invoice_number
+                }).then(response => {
+                    this.getWorkingTimes();
+                }).catch(error => {
+                    console.log(error)
+                })
             },
             getDates(){
                 var fromISO = '';

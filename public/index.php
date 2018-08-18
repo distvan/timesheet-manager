@@ -119,6 +119,10 @@ $app->group('/api/workingtime', function() use ($app, $container){
         ->setName('deleteWorkingTime')
         ->add(new AuthMiddleware($container['db'], $container['logger']));
 
+    $app->post('/attachInvoice', 'DotLogics\Action\ApiWorkingTimeAction:attachInvoice')
+        ->setName('attachInvoice')
+        ->add(new AuthMiddleware($container['db'], $container['logger']));
+
     $app->get('/getAllToday', 'DotLogics\Action\ApiWorkingTimeAction:getTodayWorkingTimes')
         ->setName('getTodayWorkingTime')
         ->add(new AuthMiddleware($container['db'], $container['logger']));

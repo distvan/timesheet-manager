@@ -93,6 +93,7 @@ class Report
                     'id' => 'doc',
                     'data' => array(
                         'title' => $this->_translator->trans('timesheet_summary'),
+                        'project_name' => $projectInfo->getName(),
                         'footer' => $this->_translator->trans('footer'),
                         'task' => $this->_translator->trans('task'),
                         'date' => $this->_translator->trans('date'),
