@@ -115,7 +115,6 @@ class Report
             $pdf = $report->render('pdf', $this->_output);
 
             return $pdf;
-            //file_put_contents($pdf, 'test.pdf');
         }
     }
 
