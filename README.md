@@ -23,3 +23,14 @@ Without docker:
 - open browser and type http://localhost:8000/
 
 If you modify the frontend code, install dpendencies using npm and after build with npm run build command
+
+Releases
+
+0.9 Base
+- user login (single worker role)
+- ability to 
+  - add project
+  - add working time or delete today working time
+  - ability to list recorded times
+  - ability to attach invoices
+  - ability to export PDF reports in 3 languages (English, German, Hungarian)
