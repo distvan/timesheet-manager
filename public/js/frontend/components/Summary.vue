@@ -89,8 +89,8 @@
                         </tr>
                         <tr v-for="(wtime, index) in wtimes">
                             <td>{{ wtime.description }}</td>
-                            <td>{{ wtime.from_hour }}:{{ wtime.from_min }}</td>
-                            <td>{{ wtime.to_hour }}:{{ wtime.to_min }}</td>
+                            <td>{{ wtime.date_from }}</td>
+                            <td>{{ wtime.date_to }}</td>
                             <td>{{ wtime.hours }}</td>
                             <td class="td-action">{{ wtime.name }}</td>
                             <td>{{ wtime.invoice_no }}</td>
