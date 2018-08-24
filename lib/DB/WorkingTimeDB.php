@@ -137,9 +137,11 @@ class WorkingTimeDB extends BaseDB
         $createdBy = $this->getCreatedBy();
         $where = $createdBy ? " AND wt.created_by=:created_by" : "";
 
-        $sql = "SELECT wt.id, wt.project_id, wt.date_from, wt.date_to, wt.description, wt.approved, wt.approved_at, wt.approved_by, wt.created_at, wt.created_by 
-                                         FROM " . self::TABLE_NAME . " wt, " . ProjectDB::TABLE_NAME . " p 
-                                         WHERE wt.project_id=p.id AND (p.parent_id=:project_id OR p.id=:project_id) AND wt.date_from>=:date_from  AND wt.date_to<=:date_to" . $where;
+        $sql = "SELECT wt.id, wt.project_id, wt.date_from, wt.date_to, wt.description, wt.approved, wt.approved_at, 
+                  wt.approved_by, wt.created_at, wt.created_by 
+                FROM " . self::TABLE_NAME . " wt, " . ProjectDB::TABLE_NAME . " p 
+                WHERE wt.project_id=p.id AND (p.parent_id=:project_id OR p.id=:project_id) 
+                    AND wt.date_from>=:date_from  AND wt.date_to<=:date_to" . $where. " ORDER BY date_from, date_to";
         try
         {
             $stmt = $this->_db->prepare($sql);
